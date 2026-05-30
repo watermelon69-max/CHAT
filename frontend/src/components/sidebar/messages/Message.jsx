@@ -1,19 +1,34 @@
 import React from "react";
+import { useAuthContext } from "../../../context/AuthContext";
+import useConversation from "../../../zustand/useConversation";
+import { extractTime } from "../../../utils/extractTime";
+import { BsFillBookmarkDashFill } from "react-icons/bs";
 
-const Message = () => {
+const Message = ({ message }) => {
+  const { authUser } = useAuthContext();
+  const { selectedConversation } = useConversation();
+  const fromMe = message.senderId === authUser._id;
+  const formattedTime = extractTime(message.createdAt)
+  const chatClassName = fromMe ? "chat-end" : "chat-start";
+  const profilePic = fromMe
+    ? authUser.profilePic
+    : selectedConversation?.profilePic;
+    const bubbleBgcolor = fromMe? "bg-blue-500" : "";
+
+
   return (
-    <div className="chat chat-end">
+    <div className={`chat ${chatClassName}`}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-full">
           <img
-            src="https://imgs.search.brave.com/BusPQb9nLSop7o-H0Z430q7-vz-dic3L5qMvP_dZtb4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzc0L2Ez/L2I2Lzc0YTNiNmE4/ODU2YjAwNGRmZmY4/MjRhZTk2NjhmZTli/LmpwZw"
+            src={profilePic}
             alt="Tailwind CSS chat bubble component"
           />
         </div>
       </div>
-      <div className="chat-bubble text-white bg-blue-500">Hi! What is upp?</div>
+      <div className={`chat-bubble text-white pb-2 ${bubbleBgcolor}`}>{message.message}</div>
       <div className="chat-footer opacity-50 text-xs flex gap-1 items-center">
-        12:42
+        {formattedTime}
       </div>
     </div>
   );
